@@ -1,0 +1,199 @@
+{
+  "name": "Ai Agent Chatbot - RAC Insurance",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋 How can I assist you today?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "32e931dc-ee6e-4e6d-aa66-76bc8d9bd0c0",
+      "name": "When chat message received",
+      "webhookId": "f444b413-8988-4550-8eca-bb4b927647d4"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful assistant who will answer the queries of users of RAC Insurance Company, check all the information in the google sheet before you answer any of the questions of the users.\n\nYou have access to the gmail you can send a custom e mail to the officials of the company.\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        -96
+      ],
+      "id": "95bcfb27-d5cd-4941-bea0-8b4365847eec",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        224
+      ],
+      "id": "fd56e7fe-13b5-4177-a60f-738d6d2d56cd",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "KfDgPIA4O7uGc66B",
+          "name": "Google Gemini(PaLM) Api account-ranakhalder1@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "This is a google sheet that contains that details of RAC company and its products.",
+        "documentId": {
+          "__rl": true,
+          "value": "1VBd_lvweAADc-4qWrEQ-KoDwjbUHEb1sJZw1tsb09cM",
+          "mode": "list",
+          "cachedResultName": "RAC Company Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VBd_lvweAADc-4qWrEQ-KoDwjbUHEb1sJZw1tsb09cM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VBd_lvweAADc-4qWrEQ-KoDwjbUHEb1sJZw1tsb09cM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        480,
+        224
+      ],
+      "id": "570bd205-6bae-46e2-b06e-a7615d19c368",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3ViO3OKAdFyeKI98",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        352,
+        224
+      ],
+      "id": "3d842bdf-e4be-4a0a-95e1-350d7c3c441b",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "ranakhalder1@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "ccList": "deysudipta746@gmail.com"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        112
+      ],
+      "id": "eaf22c50-b3b6-4c1d-8e9f-7a36e369b6b5",
+      "name": "Send a message in Gmail",
+      "webhookId": "bea6c60d-82ec-467f-92ff-8cc46256e168",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "qbUOSJrJqAYGU6Mv",
+          "name": "Gmail OAuth2 API - ranakhalder1@gmail.com"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8c8971a5-809c-48a7-a6c4-2f535a4b1e97",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1cda0640d3326cce26b465918d314fa0add466e193cc3807d2f7acb8dfbc222c"
+  },
+  "id": "zq9JIDS3Har2SHdN",
+  "tags": []
+}
